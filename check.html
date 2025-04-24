@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=League+Spartan&display=swap">
+  <link rel="manifest" href="ppgenerator.webmanifest">
+  <title>Free & Open Source Privacy Policy Generator</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta property="og:site_name" content="Free & Open Source Privacy Policy Generator" />
+  <meta property="og:title" content="Free & Open Source Privacy Policy Generator" />
+  <meta property="og:description" content="A simple web app to generate a generic privacy policy for your website" />
+  <meta property="og:image" content="https://free-privacy-policy-generator.digitalmalayali.in/images/logo.png" />
+  <meta property="og:url" content="https://free-privacy-policy-generator.digitalmalayali.in/" />
+  <meta property="og:type" content="website" />
+  <meta name="description" content="A simple web app to generate a generic privacy policy for your website" />
+  <meta name="keywords" content="Privacy Policy, Generator, Free, Open Source">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+  <meta name="copyright" content="Digital Lakhan, Nishant Srivastava, Arthur Gareginyan">
+  <meta name="author" content="Digital Lakhan, contact@digitalLakhan.in">
+  <meta name="theme-color" content="#080404" />
+  <!-- Add to homescreen for Chrome on Android-->
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="icon" sizes="192x192" href="images/android-desktop.png">
+  <!-- Add to homescreen for Safari on iOS-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Free & Open Source Privacy Policy Generator">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <!-- Tile icon for Win8 (144x144 + tile color)-->
+  <meta name="msapplication-TileColor" content="#00b4ff">
+  <link rel="shortcut icon" href="images/favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="css/style.css" media="(prefers-color-scheme: light)">
+  <script type="module" src="https://unpkg.com/dark-mode-toggle" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="css/dark.css" media="(prefers-color-scheme: dark)">
+
+  <!-- Google Tag Manager -->
+  <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || []; w[l].push({
+        'gtm.start':
+          new Date().getTime(), event: 'gtm.js'
+      }); var f = d.getElementsByTagName(s)[0],
+        j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+          'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', 'GTM-TQP83SR');</script>
+  <!-- End Google Tag Manager -->
+
+</head>
+
+<body>
+
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TQP83SR" height="0" width="0"
+      style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
+  <!-- Google Ad -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3855750928963104"
+    crossorigin="anonymous"></script>
+  <!-- Google Ad -->
+
+  <div id="particles-js"></div>
+
+  <dark-mode-toggle id="dark-mode-toggle-1" ;>
+  </dark-mode-toggle>
+
+  <div id="app">
+    <div id="gemini-chatbot">
+      <div id="gemini-chatbot-messages"></div>
+      <input type="text" id="gemini-chatbot-input" placeholder="Type your message...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+    <button onclick="toggleChatbot()" style="position: fixed; bottom: 20px; right: 20px;"
+      class="button is-primary">Ask Me Anything</button>
+    <script>
+      const geminiApiKey = 'AIzaSyBKQcT1-e6s1GsWJGx65K5N1g2a3K9SPUM'; // Replace with your actual API key
+      let chatbotVisible = false;
+
+      function toggleChatbot() {
+        const chatbot = document.getElementById('gemini-chatbot');
+        chatbotVisible = !chatbotVisible;
+        chatbot.style.display = chatbotVisible ? 'block' : 'none';
+      }
+
+      async function sendMessage() {
+        const message = document.getElementById('gemini-chatbot-input').value;
+        document.getElementById('gemini-chatbot-input').value = '';
+
+        // Add user message to chat display
+        addMessage('user', message);
+
+        try {
+          const response = await fetch(
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + geminiApiKey,
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [{ text: message }]
+                }]
+              }),
+            }
+          );
+
+          const data = await response.json();
+          console.log(data); // Log the entire response for debugging
+          const botReply = data.candidates[0].content.parts[0].text;
+
+
+          // Add bot reply to chat display
+          addMessage('bot', botReply);
+
+        } catch (error) {
+          console.error('Error:', error);
+          addMessage('bot', 'Sorry, there was an error processing your request.');
+        }
+      }
+
+      function addMessage(sender, message) {
+        const messagesDiv = document.getElementById('gemini-chatbot-messages');
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add(sender);
+        messageDiv.textContent = message;
+        messagesDiv.appendChild(messageDiv);
+      }
+
+      // Initial styling for the chatbot
+      const chatbot = document.getElementById('gemini-chatbot');
+      chatbot.style.display = 'none'; // Initially hidden
+      chatbot.style.position = 'fixed';
+      chatbot.style.bottom = '60px'; // Adjusted to avoid overlap with button
+      chatbot.style.right = '20px';
+      chatbot.style.border = '1px solid #ccc';
+      chatbot.style.padding = '10px';
+      chatbot.style.borderRadius = '5px';
+      chatbot.style.backgroundColor = '#fff';
+    </script>
+    <!-- Rest of your original code -->
+  </div>
+</body>
+
+</html>
